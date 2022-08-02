@@ -1,0 +1,9 @@
+domain: baloise.dev
+layout:
+- hybrid.helm.sdk.operatorframework.io/v1-alpha
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: appdeployment-operator
+repo: github.com/niiku/appdeployment-operator
+version: "3"

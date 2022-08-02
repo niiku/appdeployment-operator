@@ -48,14 +48,6 @@ spec:
     {{- if .Values.enableServiceMesh }}
       automountServiceAccountToken: true
     {{- end }}
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/{{ .Values.zone }}
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-           app: {{ include "generic-chart.name" . }}
-           release: {{ .Release.Name }}
       serviceAccountName: {{ template "generic-chart.serviceAccountName" . }}
       imagePullSecrets: {{- if gt (len .Values.imagePullSecrets) 0 }}{{- toYaml .Values.imagePullSecrets | nindent 8 }}{{- end }}
       securityContext: {{- if gt (len .Values.podSecurityContext) 0 }}{{- toYaml .Values.podSecurityContext | nindent 8 }}{{- end }}

@@ -52,11 +52,66 @@ rules:
   resources:
   - "serviceaccounts"
   - "services"
+  - "persistentvolumeclaims"
 - verbs:
   - "*"
   apiGroups:
   - "apps"
   resources:
   - "deployments"
+  - "statefulsets"
 
 #+kubebuilder:scaffold:rules
+
+- apiGroups:
+    - route.openshift.io
+  resources:
+    - routes
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+
+- apiGroups:
+    - external-secrets.io
+  resources:
+    - externalsecrets
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+
+- apiGroups:
+    - networking.istio.io
+  resources:
+    - virtualservices
+    - gateways
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+
+- apiGroups:
+    - monitoring.coreos.com
+  resources:
+    - servicesmonitors
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch

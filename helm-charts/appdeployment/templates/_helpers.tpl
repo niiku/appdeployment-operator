@@ -1,62 +1,65 @@
+{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "appdeployment.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "appdeployment.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- define "generic-chart.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "appdeployment.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "generic-chart.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Common labels
 */}}
-{{- define "appdeployment.labels" -}}
-helm.sh/chart: {{ include "appdeployment.chart" . }}
-{{ include "appdeployment.selectorLabels" . }}
+{{- define "generic-chart.labels" -}}
+app: {{ include "generic-chart.name" . }}
+release: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- end -}}
 
 {{/*
-Selector labels
+Define external secret name.
 */}}
-{{- define "appdeployment.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "appdeployment.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+{{- define "generic-chart.externalSecretName" -}}
+    {{- default ( include "generic-chart.name" . ) .Values.externalSecret.overrideName -}}
+{{- end -}}
+
+{{/*
+Create default route host depending on `.Chart.Name`, `.Release.Name`
+and `.Values.ingress.clusterName` ("caasd01" or "caast01" or "caasp01")
+*/}}
+  {{- define "generic-chart.host" -}}
+    {{- if .Values.ingress.clusterName -}}
+    {{- $base := .Release.Name | trunc 63 | trimSuffix "-" -}}
+    {{- $clusterName := .Values.ingress.clusterName | default "" | regexFind "^(caasd01)|(caast01)|(caasp01)" | required "A valid .Values.ingress.clusterName is required when using default host!" -}}
+    {{- printf "%s.apps.%s.balgroupit.com" $base $clusterName -}}
+  {{- end -}}
+{{- end -}}
+
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "appdeployment.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "appdeployment.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- define "generic-chart.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+{{ default (include "generic-chart.name" .) .Values.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "generic-chart.namespace" -}}
+{{- if .Values.namespaceOverride -}}
+{{- .Values.namespaceOverride -}}
+{{- else -}}
+{{- .Release.Namespace -}}
+{{- end -}}
+{{- end -}}

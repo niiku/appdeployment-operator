@@ -1,2 +1,6 @@
 # Use the 'create api' subcommand to add watches to this file.
+- group: apps.baloise.dev
+  version: v1
+  kind: AppDeployment
+  chart: helm-charts/appdeployment
 #+kubebuilder:scaffold:watch

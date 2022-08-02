@@ -28,4 +28,35 @@ rules:
   verbs:
   - create
 
+##
+## Rules for apps.baloise.dev/v1, Kind: AppDeployment
+##
+- apiGroups:
+  - apps.baloise.dev
+  resources:
+  - appdeployments
+  - appdeployments/status
+  - appdeployments/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- verbs:
+  - "*"
+  apiGroups:
+  - ""
+  resources:
+  - "serviceaccounts"
+  - "services"
+- verbs:
+  - "*"
+  apiGroups:
+  - "apps"
+  resources:
+  - "deployments"
+
 #+kubebuilder:scaffold:rules
